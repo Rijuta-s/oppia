@@ -33,6 +33,7 @@ require(
 require('services/date-time-format.service.ts');
 require('services/editability.service.ts');
 require('pages/exploration-editor-page/services/router.service.ts');
+require('services/stateful/focus-manager.service.ts');
 
 import { Subscription } from 'rxjs';
 import cloneDeep from 'lodash/cloneDeep';
@@ -40,14 +41,14 @@ import cloneDeep from 'lodash/cloneDeep';
 angular.module('oppia').component('historyTab', {
   template: require('./history-tab.component.html'),
   controller: [
-    '$http', '$log', '$rootScope', '$uibModal', 'CompareVersionsService',
+    '$http', '$log', '$rootScope', '$uibModal', '$window', 'CompareVersionsService',
     'DateTimeFormatService', 'EditabilityService', 'ExplorationDataService',
-    'LoaderService', 'RouterService', 'UrlInterpolationService',
-    'VersionTreeService', 'WindowRef',
+    'FocusManagerService', 'LoaderService', 'RouterService', 
+    'UrlInterpolationService', 'VersionTreeService', 'WindowRef',
     function(
-        $http, $log, $rootScope, $uibModal, CompareVersionsService,
+        $http, $log, $rootScope, $uibModal, $window, CompareVersionsService,
         DateTimeFormatService, EditabilityService, ExplorationDataService,
-        LoaderService, RouterService, UrlInterpolationService,
+        FocusManagerService, LoaderService, RouterService, UrlInterpolationService,
         VersionTreeService, WindowRef) {
       var ctrl = this;
       ctrl.directiveSubscriptions = new Subscription();
@@ -280,6 +281,13 @@ angular.module('oppia').component('historyTab', {
       };
 
       ctrl.$onInit = function() {
+        // //To apply focus when it is-opened through navbar tabs.
+        // FocusManagerService.setFocus('filterContainer');
+        // //To apply focus when the page is refreshed.
+        // $window.onload = function () {       
+        //   FocusManagerService.setFocus('filterContainer');
+        // }
+        console.log(RouterService.getActiveTabName())
         ctrl.directiveSubscriptions.add(
           RouterService.onRefreshVersionHistory.subscribe((data) => {
             if (

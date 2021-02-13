@@ -31,6 +31,7 @@ require(
 
 require(
   'pages/exploration-editor-page/exploration-editor-page.constants.ajs.ts');
+require('services/stateful/focus-manager.service.ts');
 
 angular.module('oppia').component('translatorOverview', {
   bindings: {
@@ -38,12 +39,12 @@ angular.module('oppia').component('translatorOverview', {
   },
   template: require('./translator-overview.component.html'),
   controller: [
-    '$scope', '$window', 'ExplorationLanguageCodeService',
+    '$scope', '$window', 'ExplorationLanguageCodeService','FocusManagerService',
     'LanguageUtilService', 'StateEditorService', 'TranslationLanguageService',
     'TranslationStatusService', 'TranslationTabActiveModeService',
     'DEFAULT_AUDIO_LANGUAGE',
     function(
-        $scope, $window, ExplorationLanguageCodeService,
+        $scope, $window, ExplorationLanguageCodeService, FocusManagerService,
         LanguageUtilService, StateEditorService, TranslationLanguageService,
         TranslationStatusService, TranslationTabActiveModeService,
         DEFAULT_AUDIO_LANGUAGE) {
@@ -153,6 +154,12 @@ angular.module('oppia').component('translatorOverview', {
         $scope.inTranslationMode = false;
         $scope.inVoiceoverMode = false;
         refreshDirectiveScope();
+        // //To apply focus when it is-opened through navbar tabs.
+        // FocusManagerService.setFocus('audioCodeField');
+        // //To apply focus when the page is refreshed.
+        // $window.onload = function () {       
+        //   FocusManagerService.setFocus('audioCodeField');
+        // }
       };
     }
   ]

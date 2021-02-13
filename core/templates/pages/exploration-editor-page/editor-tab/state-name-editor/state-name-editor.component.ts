@@ -30,7 +30,6 @@ require(
 require('services/editability.service.ts');
 require('services/stateful/focus-manager.service.ts');
 require('services/external-save.service.ts');
-
 require('constants.ts');
 
 import { Subscription } from 'rxjs';
@@ -38,16 +37,16 @@ import { Subscription } from 'rxjs';
 angular.module('oppia').component('stateNameEditor', {
   template: require('./state-name-editor.component.html'),
   controller: [
-    '$filter', 'EditabilityService', 'ExplorationStatesService',
+    '$scope','$filter', 'EditabilityService', 'ExplorationStatesService',
     'ExternalSaveService', 'FocusManagerService', 'RouterService',
     'StateEditorService', 'StateNameService', 'MAX_STATE_NAME_LENGTH',
     function(
-        $filter, EditabilityService, ExplorationStatesService,
+      $scope,$filter, EditabilityService, ExplorationStatesService,
         ExternalSaveService, FocusManagerService, RouterService,
         StateEditorService, StateNameService, MAX_STATE_NAME_LENGTH) {
       var ctrl = this;
       ctrl.directiveSubscriptions = new Subscription();
-
+      
       ctrl.initStateNameEditor = function() {
         StateNameService.init();
       };
@@ -117,6 +116,11 @@ angular.module('oppia').component('stateNameEditor', {
         ctrl.StateEditorService = StateEditorService;
         ctrl.StateNameService = StateNameService;
         ctrl.stateNameEditorIsShown = false;
+        console.log(RouterService.getActiveTabName())
+        if(RouterService.getActiveTabName() === 'main'){
+          FocusManagerService.setFocus("editor-icon");
+          console.log(RouterService.getActiveTabName())
+        }
       };
       ctrl.$onDestroy = function() {
         ctrl.directiveSubscriptions.unsubscribe();

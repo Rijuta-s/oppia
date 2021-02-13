@@ -39,22 +39,22 @@ require('services/alerts.service.ts');
 require('services/date-time-format.service.ts');
 require('services/editability.service.ts');
 require('services/user.service.ts');
-
+require('services/stateful/focus-manager.service.ts');
 require(
   'pages/exploration-editor-page/exploration-editor-page.constants.ajs.ts');
 
 angular.module('oppia').component('feedbackTab', {
   template: require('./feedback-tab.component.html'),
   controller: [
-    '$q', '$rootScope', '$uibModal', 'AlertsService', 'ChangeListService',
+    '$q', '$rootScope', '$uibModal', '$window', 'AlertsService', 'ChangeListService',
     'DateTimeFormatService', 'EditabilityService', 'ExplorationStatesService',
-    'LoaderService', 'SuggestionModalForExplorationEditorService',
+    'FocusManagerService', 'LoaderService', 'SuggestionModalForExplorationEditorService',
     'ThreadDataBackendApiService', 'ThreadStatusDisplayService',
     'UrlInterpolationService', 'UserService',
     function(
-        $q, $rootScope, $uibModal, AlertsService, ChangeListService,
+        $q, $rootScope, $uibModal, $window, AlertsService, ChangeListService,
         DateTimeFormatService, EditabilityService, ExplorationStatesService,
-        LoaderService, SuggestionModalForExplorationEditorService,
+        FocusManagerService, LoaderService, SuggestionModalForExplorationEditorService,
         ThreadDataBackendApiService, ThreadStatusDisplayService,
         UrlInterpolationService, UserService) {
       var ctrl = this;
@@ -217,6 +217,12 @@ angular.module('oppia').component('feedbackTab', {
       };
 
       ctrl.$onInit = function() {
+        // //To apply focus when it is-opened through navbar tabs.
+        // FocusManagerService.setFocus('newThreadButton');
+        // //To apply focus when the page is refreshed.
+        // $window.onload = function () {       
+        //   FocusManagerService.setFocus('newThreadButton');
+        // }
         ctrl.STATUS_CHOICES = ThreadStatusDisplayService.STATUS_CHOICES;
         ctrl.activeThread = null;
         ctrl.userIsLoggedIn = null;
