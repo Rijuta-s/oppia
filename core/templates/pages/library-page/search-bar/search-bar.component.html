@@ -1,16 +1,16 @@
 <div class="oppia-same-row-container">
   <form class="navbar-form float-left oppia-search-bar-form" role="search">
     <div class="form-group">
-      <div class="input-group oppia-input-group" ng-class="{'classroom-page-input-group': $ctrl.classroomPageIsActive}">
+      <div class="input-group oppia-input-group" [ngClass]="{'classroom-page-input-group': classroomPageIsActive}">
         <div class="input-group-addon oppia-search-bar-icon">
-          <i class="material-icons oppia-translate-icon-down md-18" ng-if="!$ctrl.isSearchInProgress()">&#xE8B6;</i>
-          <span ng-if="$ctrl.isSearchInProgress()">
+          <i class="material-icons oppia-translate-icon-down md-18" *ngIf="!isSearchInProgress()">&#xE8B6;</i>
+          <span *ngIf="isSearchInProgress()">
             <i class="material-icons md-18 oppia-animate-spin">&#xE863;</i>
           </span>
         </div>
         <input type="text" class="form-control oppia-search-bar-input oppia-search-bar-text-input protractor-test-search-input"
-               ng-attr-placeholder="<[$ctrl.searchBarPlaceholder]>" ng-model="$ctrl.searchQuery"
-               ng-change="$ctrl.classroomPageIsActive ? null : $ctrl.onSearchQueryChangeExec()"
+               [attr.placeholder]="<[searchBarPlaceholder]>" ng-model="searchQuery"
+               ng-change="classroomPageIsActive ? null : onSearchQueryChangeExec()"
                ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 } }" aria-label="Search bar">
       </div>
     </div>
@@ -18,104 +18,104 @@
 </div>
 
 <div class="oppia-same-row-container">
-  <div ng-class="{'open' : $ctrl.activeMenuName === 'category', 'dropup' : $ctrl.enableDropup()}" uib-dropdown class="float-left oppia-navbar-button-container oppia-search-bar-category-selector protractor-test-search-bar-category-selector">
+  <div [ngClass]="{'open' : activeMenuName === 'category', 'dropup' : enableDropup()}" uib-dropdown class="float-left oppia-navbar-button-container oppia-search-bar-category-selector protractor-test-search-bar-category-selector">
     <p class="oppia-dropdown-label">Category</p>
-    <button ng-click="$ctrl.openSubmenu($event, 'category')" ng-keydown="$ctrl.onMenuKeypress($event, 'category', {shiftTab: $ctrl.ACTION_CLOSE, enter: $ctrl.ACTION_OPEN})" uib-dropdown-toggle type="button" class="btn protractor-test-search-bar-dropdown-toggle oppia-search-bar-dropdown-toggle oppia-search-bar-input oppia-search-bar-category-input ng-cloak dropdown-toggle"
-            title="<[$ctrl.selectionDetails.categories.description | translate]>">
-      <[$ctrl.categoryButtonText|truncate:14]>
+    <button ng-click="openSubmenu($event, 'category')" ng-keydown="onMenuKeypress($event, 'category', {shiftTab: ACTION_CLOSE, enter: ACTION_OPEN})" uib-dropdown-toggle type="button" class="btn protractor-test-search-bar-dropdown-toggle oppia-search-bar-dropdown-toggle oppia-search-bar-input oppia-search-bar-category-input ng-cloak dropdown-toggle"
+            title="<[selectionDetails.categories.description | translate]>">
+      <[categoryButtonText|truncate:14]>
     </button>
     <!-- The $event.stopPropagation() prevents the dropdown from closing after an option is selected. -->
     <ul uib-dropdown-menu class="protractor-test-search-bar-dropdown-menu oppia-search-bar-dropdown-menu oppia-search-bar-dropdown-menu-section" role="menu" ng-click="$event.stopPropagation()">
-      <li ng-repeat="item in $ctrl.selectionDetails.categories.masterList track by $index"
-          ng-if="$ctrl.selectionDetails.categories.selections[item.id]">
-        <a href="" ng-click="$ctrl.toggleSelection('categories', item.id)" ng-if="!$first && !$last" class="dropdown-item">
+      <li ng-repeat="item in selectionDetails.categories.masterList track by $index"
+          *ngIf="selectionDetails.categories.selections[item.id]">
+        <a href="" ng-click="toggleSelection('categories', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
           <span translate="<[item.text]>" class="protractor-test-selected"></span>
-          <i ng-if="$ctrl.selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
         </a>
-        <a href="" ng-click="$ctrl.toggleSelection('categories', item.id)" ng-if="$first" ng-keydown="$ctrl.onMenuKeypress($event, 'category', {shiftTab: $ctrl.ACTION_CLOSE})" class="dropdown-item">
+        <a href="" ng-click="toggleSelection('categories', item.id)" *ngIf="$first" ng-keydown="onMenuKeypress($event, 'category', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
           <span translate="<[item.text]>" class="protractor-test-selected"></span>
-          <i ng-if="$ctrl.selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
         </a>
-        <a href="" ng-click="$ctrl.toggleSelection('categories', item.id)" ng-if="$last" ng-keydown="$ctrl.onMenuKeypress($event, 'category', {tab: $ctrl.ACTION_CLOSE})"
+        <a href="" ng-click="toggleSelection('categories', item.id)" *ngIf="$last" ng-keydown="onMenuKeypress($event, 'category', {tab: ACTION_CLOSE})"
            class="dropdown-item">
           <span translate="<[item.text]>" class="protractor-test-selected"></span>
-          <i ng-if="$ctrl.selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
         </a>
       </li>
-      <li ng-if="$ctrl.selectionDetails.categories.numSelections > 1">
-        <a href="" ng-click="$ctrl.deselectAll('categories')" class="dropdown-item"><i>Deselect All</i></a>
+      <li *ngIf="selectionDetails.categories.numSelections > 1">
+        <a href="" ng-click="deselectAll('categories')" class="dropdown-item"><i>Deselect All</i></a>
       </li>
-      <hr ng-if="$ctrl.selectionDetails.categories.numSelections > 0" class="oppia-search-bar-hr">
-      <li ng-repeat="item in $ctrl.selectionDetails.categories.masterList track by $index"
-          ng-if="!$ctrl.selectionDetails.categories.selections[item.id]">
-        <a href="" ng-click="$ctrl.toggleSelection('categories', item.id)" ng-if="!$first && !$last" class="dropdown-item">
+      <hr *ngIf="selectionDetails.categories.numSelections > 0" class="oppia-search-bar-hr">
+      <li ng-repeat="item in selectionDetails.categories.masterList track by $index"
+          *ngIf="!selectionDetails.categories.selections[item.id]">
+        <a href="" ng-click="toggleSelection('categories', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
           <span translate="<[item.text]>" class="protractor-test-deselected"></span>
-          <i ng-if="$ctrl.selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
         </a>
-        <a href="" ng-click="$ctrl.toggleSelection('categories', item.id)" ng-if="$first" ng-keydown="$ctrl.onMenuKeypress($event, 'category', {shiftTab: $ctrl.ACTION_CLOSE})" class="dropdown-item">
+        <a href="" ng-click="toggleSelection('categories', item.id)" *ngIf="$first" ng-keydown="onMenuKeypress($event, 'category', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
           <span translate="<[item.text]>" class="protractor-test-deselected"></span>
-          <i ng-if="$ctrl.selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
         </a>
-        <a href="" ng-click="$ctrl.toggleSelection('categories', item.id)" ng-if="$last" ng-keydown="$ctrl.onMenuKeypress($event, 'category', {tab: $ctrl.ACTION_CLOSE})"
+        <a href="" ng-click="toggleSelection('categories', item.id)" *ngIf="$last" ng-keydown="onMenuKeypress($event, 'category', {tab: ACTION_CLOSE})"
            class="dropdown-item">
           <span translate="<[item.text]>" class="protractor-test-deselected"></span>
-          <i ng-if="$ctrl.selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
         </a>
       </li>
     </ul>
   </div>
 </div>
-<div ng-class="{'open' : $ctrl.activeMenuName === 'language', 'dropup' : $ctrl.enableDropup()}" uib-dropdown class="float-left oppia-navbar-button-container oppia-search-bar-language-selector protractor-test-search-bar-language-selector">
+<div [ngClass]="{'open' : activeMenuName === 'language', 'dropup' : enableDropup()}" uib-dropdown class="float-left oppia-navbar-button-container oppia-search-bar-language-selector protractor-test-search-bar-language-selector">
   <p class="oppia-dropdown-label">Language</p>
-  <button ng-click="$ctrl.openSubmenu($event, 'language')" ng-keydown="$ctrl.onMenuKeypress($event, 'language', {shiftTab: $ctrl.ACTION_CLOSE, enter: $ctrl.ACTION_OPEN})" uib-dropdown-toggle type="button" class="btn protractor-test-search-bar-dropdown-toggle oppia-search-bar-input oppia-search-bar-language-input ng-cloak dropdown-toggle language-dropdown-toggle oppia-search-bar-dropdown-toggle-button"
-          title="<[$ctrl.selectionDetails.languageCodes.description | translate]>">
-    <[$ctrl.languageButtonText|truncate:14]>
+  <button ng-click="openSubmenu($event, 'language')" ng-keydown="onMenuKeypress($event, 'language', {shiftTab: ACTION_CLOSE, enter: ACTION_OPEN})" uib-dropdown-toggle type="button" class="btn protractor-test-search-bar-dropdown-toggle oppia-search-bar-input oppia-search-bar-language-input ng-cloak dropdown-toggle language-dropdown-toggle oppia-search-bar-dropdown-toggle-button"
+          title="<[selectionDetails.languageCodes.description | translate]>">
+    <[languageButtonText|truncate:14]>
   </button>
   <!-- The $event.stopPropagation() prevents the dropdown from closing after an option is selected. -->
   <ul uib-dropdown-menu class="protractor-test-search-bar-dropdown-menu oppia-search-bar-dropdown-menu-section" role="menu" ng-click="$event.stopPropagation()">
-    <li ng-repeat="item in $ctrl.selectionDetails.languageCodes.masterList track by $index"
-        ng-if="$ctrl.selectionDetails.languageCodes.selections[item.id]">
-      <a href="" ng-click="$ctrl.toggleSelection('languageCodes', item.id)" ng-if="!$first && !$last" class="dropdown-item">
+    <li ng-repeat="item in selectionDetails.languageCodes.masterList track by $index"
+        *ngIf="selectionDetails.languageCodes.selections[item.id]">
+      <a href="" ng-click="toggleSelection('languageCodes', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
         <span translate="<[item.text]>" class="protractor-test-selected"></span>
-        <i ng-if="$ctrl.selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
       </a>
-      <a href="" ng-click="$ctrl.toggleSelection('languageCodes', item.id)" ng-if="$first" ng-keydown="$ctrl.onMenuKeypress($event, 'language', {shiftTab: $ctrl.ACTION_CLOSE})" class="dropdown-item">
+      <a href="" ng-click="toggleSelection('languageCodes', item.id)" *ngIf="$first" ng-keydown="onMenuKeypress($event, 'language', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
         <span translate="<[item.text]>" class="protractor-test-selected"></span>
-        <i ng-if="$ctrl.selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
       </a>
-      <a href="" ng-click="$ctrl.toggleSelection('languageCodes', item.id)" ng-if="$last" ng-keydown="$ctrl.onMenuKeypress($event, 'language', {tab: $ctrl.ACTION_CLOSE})"
+      <a href="" ng-click="toggleSelection('languageCodes', item.id)" *ngIf="$last" ng-keydown="onMenuKeypress($event, 'language', {tab: ACTION_CLOSE})"
          class="dropdown-item">
         <span translate="<[item.text]>" class="protractor-test-selected"></span>
-        <i ng-if="$ctrl.selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
       </a>
     </li>
-    <li ng-if="$ctrl.selectionDetails.languageCodes.numSelections > 1">
-      <a href="" ng-click="$ctrl.deselectAll('languageCodes')" class="dropdown-item"><i>Deselect All</i></a>
+    <li *ngIf="selectionDetails.languageCodes.numSelections > 1">
+      <a href="" ng-click="deselectAll('languageCodes')" class="dropdown-item"><i>Deselect All</i></a>
     </li>
-    <hr ng-if="$ctrl.selectionDetails.languageCodes.numSelections > 0" class="oppia-search-bar-hr">
-    <li ng-repeat="item in $ctrl.selectionDetails.languageCodes.masterList track by $index"
-        ng-if="!$ctrl.selectionDetails.languageCodes.selections[item.id]">
-      <a href="" ng-click="$ctrl.toggleSelection('languageCodes', item.id)" ng-if="!$first && !$last" class="dropdown-item">
+    <hr *ngIf="selectionDetails.languageCodes.numSelections > 0" class="oppia-search-bar-hr">
+    <li ng-repeat="item in selectionDetails.languageCodes.masterList track by $index"
+        *ngIf="!selectionDetails.languageCodes.selections[item.id]">
+      <a href="" ng-click="toggleSelection('languageCodes', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
         <span translate="<[item.text]>" class="protractor-test-deselected"></span>
-        <i ng-if="$ctrl.selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
       </a>
-      <a href="" ng-click="$ctrl.toggleSelection('languageCodes', item.id)" ng-if="$first" ng-keydown="$ctrl.onMenuKeypress($event, 'language', {shiftTab: $ctrl.ACTION_CLOSE})" class="dropdown-item">
+      <a href="" ng-click="toggleSelection('languageCodes', item.id)" *ngIf="$first" ng-keydown="onMenuKeypress($event, 'language', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
         <span translate="<[item.text]>" class="protractor-test-deselected"></span>
-        <i ng-if="$ctrl.selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
       </a>
-      <a href="" ng-click="$ctrl.toggleSelection('languageCodes', item.id)" ng-if="$last" ng-keydown="$ctrl.onMenuKeypress($event, 'language', {tab: $ctrl.ACTION_CLOSE})"
+      <a href="" ng-click="toggleSelection('languageCodes', item.id)" *ngIf="$last" ng-keydown="onMenuKeypress($event, 'language', {tab: ACTION_CLOSE})"
          class="dropdown-item">
         <span translate="<[item.text]>" class="protractor-test-deselected"></span>
-        <i ng-if="$ctrl.selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
       </a>
     </li>
   </ul>
 </div>
 <div class="oppia-same-row-container">
   <div class="float-left oppia-navbar-button-container">
-    <div ng-if="$ctrl.classroomPageIsActive"
+    <div *ngIf="classroomPageIsActive"
          class="oppia-search-button protractor-test-search-button"
-         ng-click="$ctrl.onSearchQueryChangeExec()"
+         ng-click="onSearchQueryChangeExec()"
          title="Click here to search">
          Go!
     </div>

@@ -30,19 +30,19 @@
   <div class="d-lg-none oppia-search-bar-container">
     <search-bar enable-dropup="false"></search-bar>
   </div>
-  <div ng-if="!$ctrl.someResultsExist" class="oppia-search-results-intro" ng-cloak>
+  <div *ngIf="!$ctrl.someResultsExist" class="oppia-search-results-intro" ng-cloak>
     <div class="oppia-search-results-no-match">
       <picture>
-        <source type="image/webp" ng-srcset="<[$ctrl.getStaticImageUrl('/general/no_explorations_found.webp')]>">
-        <source type="image/png" ng-srcset="<[$ctrl.getStaticImageUrl('/general/no_explorations_found.png')]>">
-        <img ng-if="!$ctrl.profilePictureDataUrl" ng-src="<[$ctrl.getStaticImageUrl('/general/no_explorations_found.png')]>">
+        <source type="image/webp" [srcset]="<[$ctrl.getStaticImageUrl('/general/no_explorations_found.webp')]>">
+        <source type="image/png" [srcset]="<[$ctrl.getStaticImageUrl('/general/no_explorations_found.png')]>">
+        <img *ngIf="!$ctrl.profilePictureDataUrl" ng-src="<[$ctrl.getStaticImageUrl('/general/no_explorations_found.png')]>">
       </picture>
       <p class="text-center">
         <span translate="I18N_LIBRARY_NO_EXPLORATION_FOR_QUERY"></span><br><br>
-        <a ng-if="!$ctrl.userIsLoggedIn" href="" ng-click="$ctrl.onRedirectToLogin('/creator-dashboard?mode=create')"
+        <a *ngIf="!$ctrl.userIsLoggedIn" href="" ng-click="$ctrl.onRedirectToLogin('/creator-dashboard?mode=create')"
            translate="I18N_LIBRARY_CREATE_EXPLORATION_QUESTION">
         </a>
-        <a ng-if="$ctrl.userIsLoggedIn" href="/creator-dashboard?mode=create"
+        <a *ngIf="$ctrl.userIsLoggedIn" href="/creator-dashboard?mode=create"
            translate="I18N_LIBRARY_CREATE_EXPLORATION_QUESTION">
         </a>
       </p>
