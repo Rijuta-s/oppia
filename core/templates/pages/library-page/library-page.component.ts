@@ -17,39 +17,77 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { downgradeComponent } from '@angular/upgrade/static';
+import { HttpClient } from '@angular/common/http';
+
+import constants from 'assets/constants';
+import { ClassroomBackendApiService } from 'domain/classroom/classroom-backend-api.service';
+import { CollectionSummaryBackendDict } from 'domain/collection/collection-summary.model';
+import { CreatorExplorationSummaryBackendDict } from 'domain/summary/creator-exploration-summary.model';
+import { I18nLanguageCodeService } from 'services/i18n-language-code.service';
+import { LibraryPageConstants } from 'pages/library-page/library-page.constants';
 import { LoaderService } from 'services/loader.service';
+import { LoggerService } from 'services/contextual/logger.service';
+import { PageTitleService } from 'services/page-title.service';
 import { SearchService } from 'services/search.service';
 import { UrlInterpolationService } from 'domain/utilities/url-interpolation.service';
+import { UserService } from 'services/user.service'
 import { WindowDimensionsService } from 'services/contextual/window-dimensions.service';
 import { WindowRef } from 'services/contextual/window-ref.service';
-import { downgradeComponent } from '@angular/upgrade/static';
-import { LibraryPageConstants } from 'pages/library-page/library-page.constants';
-import { ClassroomBackendApiService } from 'domain/classroom/classroom-backend-api.service';
-import { PageTitleService } from 'core/templates/services/page-title.service';
-import { LoggerService } from 'services/contextual/logger.service';
+interface LibraryPageData {
+  'activity_list': [],
+  'header_i18n_id': string,
+  'preferred_language_codes': string[],
+}
+
+interface LibraryIndexData {
+  'activity_summary_dicts_by_category': {},
+  'preferred_language_codes': string[]
+}
+
+interface Activities {
+  explorations: {},
+  collections: {}
+}
+
+interface CreatorDashboardData {
+  'explorations_list': CreatorExplorationSummaryBackendDict[];
+  'collections_list': CollectionSummaryBackendDict[];
+}
+
+interface LibraryPageModes {
+    GROUP: string,
+    INDEX: string,
+    SEARCH: string
+}
 @Component({
   selector: 'library-page',
   templateUrl: './library-page.component.html'
 })
 
-export class LibraryPageComponent implements OnInit, OnDestroy{
-  pageMode;
-  LIBRARY_PAGE_MODES;
-  leftmostCardIndices = [];
-  groupName: string;
-  tileDisplayCount: number;
-  libraryWindowIsNarrow: boolean;
-  CLASSROOM_PROMOS_ARE_ENABLED: boolean;
+export class LibraryPageComponent implements OnInit, OnDestroy {
+  activeGroupIndex: null | number;
+  activitiesOwned: Activities;
+  activityList: [];
   bannerImageFilename: string;
-  possibleBannerFilenames: Array<string>;
   bannerImageFileUrl: string;
-  activeGroupIndex: null;
-  index: number;
+  groupName: string;
+  groupHeaderI18nId: string;
   isAnyCarouselCurrentlyScrolling: boolean = false;
-  resizeSubscription: any;
-  MAX_NUM_TILES_PER_ROW: number = 4;
+  index: number;
+  leftmostCardIndices: number[];
   libraryGroups;
+  libraryWindowIsNarrow: boolean;
+  pageMode: string;
+  possibleBannerFilenames: Array<string>;
+  resizeSubscription: any;
+  tileDisplayCount: number;
+  CLASSROOM_PROMOS_ARE_ENABLED: boolean;
+  MAX_NUM_TILES_PER_ROW: number = 4;
+  LIBRARY_PAGE_MODES: LibraryPageModes;  
+
   constructor(
+    private http: HttpClient,
     private loaderService: LoaderService,
     private searchService: SearchService,
     private urlInterpolationService: UrlInterpolationService,
@@ -58,6 +96,8 @@ export class LibraryPageComponent implements OnInit, OnDestroy{
     private pageTitleService: PageTitleService,
     private windowRef: WindowRef,
     private loggerService: LoggerService,
+    private i18nLanguageCodeService: I18nLanguageCodeService,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -105,38 +145,38 @@ export class LibraryPageComponent implements OnInit, OnDestroy{
         var pathnameArray = this.windowRef.nativeWindow.location.pathname.split('/');
         this.groupName = pathnameArray[2];
 
-        $http.get('/librarygrouphandler', {
+        this.http.get<LibraryPageData>('/librarygrouphandler', {
           params: {
             group_name: this.groupName
           }
-        }).then(
-          function(response) {
-            this.activityList = response.data.activity_list;
+        }).toPromise().then((response) => {
+            this.activityList = response.activity_list;
 
-            this.groupHeaderI18nId = response.data.header_i18n_id;
+            this.groupHeaderI18nId = response.header_i18n_id;
 
             this.i18nLanguageCodeService.onPreferredLanguageCodesLoaded.emit(
-              response.data.preferred_language_codes);
+              response.preferred_language_codes);
 
             this.loaderService.hideLoadingScreen();
           });
       } else {
-        $http.get('/libraryindexhandler').then(function(response) {
+        this.http.get<LibraryIndexData>('/libraryindexhandler').toPromise().then(
+          (response) => {
           this.libraryGroups =
-            response.data.activity_summary_dicts_by_category;
-          this.userService.getUserInfoAsync().then(function(userInfo) {
+            response.activity_summary_dicts_by_category;
+          this.userService.getUserInfoAsync().then((userInfo) => {
             this.activitiesOwned = {explorations: {}, collections: {}};
             if (userInfo.isLoggedIn()) {
-              $http.get('/creatordashboardhandler/data')
-                .then(function(response) {
-                  this.libraryGroups.forEach(function(libraryGroup) {
+              this.http.get<CreatorDashboardData>('/creatordashboardhandler/data').toPromise()
+                .then((response) => {
+                  this.libraryGroups.forEach((libraryGroup) => {
                     var activitySummaryDicts = (
                       libraryGroup.activity_summary_dicts);
 
                     var ACTIVITY_TYPE_EXPLORATION = 'exploration';
                     var ACTIVITY_TYPE_COLLECTION = 'collection';
-                    activitySummaryDicts.forEach(function(
-                        activitySummaryDict) {
+                    activitySummaryDicts.forEach((
+                        activitySummaryDict) => {
                       if (activitySummaryDict.activity_type === (
                         ACTIVITY_TYPE_EXPLORATION)) {
                         this.activitiesOwned.explorations[
@@ -158,14 +198,14 @@ export class LibraryPageComponent implements OnInit, OnDestroy{
                       }
                     });
 
-                    response.data.explorations_list
-                      .forEach(function(ownedExplorations) {
+                    response.explorations_list
+                      .forEach((ownedExplorations) => {
                         this.activitiesOwned.explorations[
                           ownedExplorations.id] = true;
                       });
 
-                    response.data.collections_list
-                      .forEach(function(ownedCollections) {
+                    response.collections_list
+                      .forEach((ownedCollections)  =>{
                         this.activitiesOwned.collections[
                           ownedCollections.id] = true;
                       });
@@ -178,23 +218,23 @@ export class LibraryPageComponent implements OnInit, OnDestroy{
           });
 
           this.i18nLanguageCodeService.onPreferredLanguageCodesLoaded.emit(
-            response.data.preferred_language_codes);
+            response.preferred_language_codes);
 
-          // Initialize the carousel(s) on the library index page.
-          // Pause is necessary to ensure all elements have loaded.
-          setTimeout(this.initCarousels(), 390);
-          this.keyboardShortcutService.bindLibraryPageShortcuts();
+          // // Initialize the carousel(s) on the library index page.
+          // // Pause is necessary to ensure all elements have loaded.
+          // setTimeout(this.initCarousels(), 390);
+          // this.keyboardShortcutService.bindLibraryPageShortcuts();
 
 
           // Check if actual and expected widths are the same.
           // If not produce an error that would be caught by e2e tests.
           setTimeout(function() {
             var actualWidth = $('exploration-summary-tile').width();
-            if (actualWidth && actualWidth !== LIBRARY_TILE_WIDTH_PX) {
+            if (actualWidth && actualWidth !== constants.LIBRARY_TILE_WIDTH_PX) {
               this.loggerService.error(
                 'The actual width of tile is different than the ' +
                 'expected width. Actual size: ' + actualWidth +
-                ', Expected size: ' + LIBRARY_TILE_WIDTH_PX);
+                ', Expected size: ' + constants.LIBRARY_TILE_WIDTH_PX);
             }
           }, 3000);
           // The following initializes the tracker to have all
@@ -231,32 +271,32 @@ export class LibraryPageComponent implements OnInit, OnDestroy{
     return this.urlInterpolationService.getStaticImageUrl(imagePath);
   };
 
-  setActiveGroup(groupIndex): void{
+  setActiveGroup(groupIndex): void {
     this.activeGroupIndex = groupIndex;
   };
 
 
-  clearActiveGroup(): void{
+  clearActiveGroup(): void {
     this.activeGroupIndex = null;
   };
 
-  initCarousels(): void{
+  initCarousels(): void {
     // This prevents unnecessary execution of this method immediately
     // after a window resize event is fired.
     if (!this.libraryGroups) {
       return;
     }
 
-    var windowWidth = this.windowRef.nativeWindow.width() * 0.85;
-    // The number 20 is added to LIBRARY_TILE_WIDTH_PX in order to
+    var windowWidth = this.windowDimensionsService.getWidth() * 0.85;
+    // The number 20 is added to constants.LIBRARY_TILE_WIDTH_PX in order to
     // compensate for padding and margins. 20 is just an arbitrary
     // number.
     this.tileDisplayCount = Math.min(
-      Math.floor(windowWidth / (LIBRARY_TILE_WIDTH_PX + 20)),
-      MAX_NUM_TILES_PER_ROW);
+      Math.floor(windowWidth / (constants.LIBRARY_TILE_WIDTH_PX + 20)),
+      this.MAX_NUM_TILES_PER_ROW);
 
     $('.oppia-library-carousel').css({
-      width: (this.tileDisplayCount * LIBRARY_TILE_WIDTH_PX) + 'px'
+      width: (this.tileDisplayCount * constants.LIBRARY_TILE_WIDTH_PX) + 'px'
     });
 
     // The following determines whether to enable left scroll after
@@ -268,7 +308,7 @@ export class LibraryPageComponent implements OnInit, OnDestroy{
       var carouselScrollPositionPx = $(
         carouselJQuerySelector).scrollLeft();
       var index = Math.ceil(
-        carouselScrollPositionPx / LIBRARY_TILE_WIDTH_PX);
+        carouselScrollPositionPx / constants.LIBRARY_TILE_WIDTH_PX);
       this.leftmostCardIndices[i] = index;
     }
   };
@@ -304,20 +344,20 @@ export class LibraryPageComponent implements OnInit, OnDestroy{
     }
 
     var newScrollPositionPx = carouselScrollPositionPx +
-      (this.tileDisplayCount * LIBRARY_TILE_WIDTH_PX * direction);
+      (this.tileDisplayCount * constants.LIBRARY_TILE_WIDTH_PX * direction);
 
-    $(carouselJQuerySelector).animate({
-      scrollLeft: newScrollPositionPx
-    }, {
-      duration: 800,
-      queue: false,
-      start: function() {
-        isAnyCarouselCurrentlyScrolling = true;
-      },
-      complete: function() {
-        isAnyCarouselCurrentlyScrolling = false;
-      }
-    });
+    // $(carouselJQuerySelector).animate({
+    //   scrollLeft: newScrollPositionPx
+    // }, {
+    //   duration: 800,
+    //   queue: false,
+    //   start: function() {
+    //     this.isAnyCarouselCurrentlyScrolling = true;
+    //   },
+    //   complete: function() {
+    //     this.isAnyCarouselCurrentlyScrolling = false;
+    //   }
+    // });
   };
 
   // The following loads explorations belonging to a particular group.
@@ -358,5 +398,4 @@ export class LibraryPageComponent implements OnInit, OnDestroy{
 }
 
 angular.module('oppia').directive(
-  'loginPage', downgradeComponent({component: LibraryPageComponent}));
-
+  'libraryPage', downgradeComponent({component: LibraryPageComponent}));
