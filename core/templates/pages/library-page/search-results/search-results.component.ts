@@ -30,7 +30,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './search-results.component.html'
 })
 
-export class searchResultsComponent implements OnInit, OnDestroy{
+export class SearchResultsComponent implements OnInit, OnDestroy{
   someResultsExist: boolean;
   userIsLoggedIn: boolean | null;
   directiveSubscriptions: Subscription = new Subscription();
@@ -85,4 +85,4 @@ export class searchResultsComponent implements OnInit, OnDestroy{
 }
 
 angular.module('oppia').directive(
-  'searchResults', downgradeComponent({component: searchResultsComponent}));
+  'searchResults', downgradeComponent({component: SearchResultsComponent}));

@@ -28,7 +28,9 @@ import { OppiaAngularRootComponent } from
 import { platformFeatureInitFactory, PlatformFeatureService } from
   'services/platform-feature.service';
 import { LearnerPlaylistModalComponent } from 'pages/learner-dashboard-page/modal-templates/learner-playlist-modal.component';
-
+import { LibraryPageComponent } from 'pages/library-page/library-page.component'
+import { SearchResultsComponent } from 'pages/library-page/search-results/search-results.component';
+import { LibraryFooterComponent } from 'pages/library-page/library-footer/library-footer.component';
 @NgModule({
   imports: [
     BrowserModule,
@@ -36,12 +38,18 @@ import { LearnerPlaylistModalComponent } from 'pages/learner-dashboard-page/moda
     SharedComponentsModule
   ],
   declarations: [
+    LearnerPlaylistModalComponent,
+    LibraryFooterComponent,
+    LibraryPageComponent,
     OppiaAngularRootComponent,
-    LearnerPlaylistModalComponent
+    SearchResultsComponent,
   ],
   entryComponents: [
+    LearnerPlaylistModalComponent,
+    LibraryFooterComponent,
+    LibraryPageComponent,
     OppiaAngularRootComponent,
-    LearnerPlaylistModalComponent
+    SearchResultsComponent,
   ],
   providers: [
     {

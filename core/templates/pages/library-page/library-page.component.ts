@@ -35,13 +35,36 @@ import { UserService } from 'services/user.service'
 import { WindowDimensionsService } from 'services/contextual/window-dimensions.service';
 import { WindowRef } from 'services/contextual/window-ref.service';
 interface LibraryPageData {
-  'activity_list': [],
+  'activity_list': ActivityDicts[],
   'header_i18n_id': string,
   'preferred_language_codes': string[],
 }
 
+interface ActivityDicts {  
+    'activity_type': string                                        
+    'category': string,
+    'community_owned': boolean,
+    'id': string,
+    'language_code': string,
+    'num_views': number,
+    'objective': string,
+    'status': string,
+    'tags': [],
+    'thumbnail_bg_color': string,
+    'thumbnail_icon_url': string,
+    'title': string,
+}
+interface SummaryDicts {
+  'activity_summary_dicts': ActivityDicts[],
+  'categories': [],
+  'header_i18n_id': string,
+  'has_full_results_page': boolean,
+  'full_results_url': string,
+  'protractor_id' ?: string,
+}
+
 interface LibraryIndexData {
-  'activity_summary_dicts_by_category': {},
+  'activity_summary_dicts_by_category': SummaryDicts[],
   'preferred_language_codes': string[]
 }
 
@@ -68,7 +91,7 @@ interface LibraryPageModes {
 export class LibraryPageComponent implements OnInit, OnDestroy {
   activeGroupIndex: null | number;
   activitiesOwned: Activities;
-  activityList: [];
+  activityList: ActivityDicts[];
   bannerImageFilename: string;
   bannerImageFileUrl: string;
   groupName: string;
@@ -76,7 +99,7 @@ export class LibraryPageComponent implements OnInit, OnDestroy {
   isAnyCarouselCurrentlyScrolling: boolean = false;
   index: number;
   leftmostCardIndices: number[];
-  libraryGroups;
+  libraryGroups:LibraryIndexData['activity_summary_dicts_by_category'];
   libraryWindowIsNarrow: boolean;
   pageMode: string;
   possibleBannerFilenames: Array<string>;
@@ -114,12 +137,14 @@ export class LibraryPageComponent implements OnInit, OnDestroy {
 
       this.bannerImageFileUrl = this.urlInterpolationService.getStaticImageUrl(
         '/library/' + this.bannerImageFilename);
-
+      this.CLASSROOM_PROMOS_ARE_ENABLED = true
       let service = this.classroomBackendApiService;
       service.fetchClassroomPromosAreEnabledStatusAsync().then(
-        function(classroomPromosAreEnabled) {
+        (classroomPromosAreEnabled) => {
           this.CLASSROOM_PROMOS_ARE_ENABLED = classroomPromosAreEnabled;
+          console.log(classroomPromosAreEnabled)
         });
+        console.log(this.CLASSROOM_PROMOS_ARE_ENABLED)
 
       this.activeGroupIndex = null;
 
@@ -169,6 +194,7 @@ export class LibraryPageComponent implements OnInit, OnDestroy {
             if (userInfo.isLoggedIn()) {
               this.http.get<CreatorDashboardData>('/creatordashboardhandler/data').toPromise()
                 .then((response) => {
+                  console.log(response)
                   this.libraryGroups.forEach((libraryGroup) => {
                     var activitySummaryDicts = (
                       libraryGroup.activity_summary_dicts);
@@ -246,8 +272,8 @@ export class LibraryPageComponent implements OnInit, OnDestroy {
           }
         });
       }
+      console.log(this.libraryGroups.length)
       this.tileDisplayCount = 0;
-
       var libraryWindowCutoffPx = 530;
       this.libraryWindowIsNarrow = (
         this.windowDimensionsService.getWidth() <= libraryWindowCutoffPx);

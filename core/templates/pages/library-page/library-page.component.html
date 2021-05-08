@@ -17,20 +17,20 @@
         <div *ngIf="activityList.length > 0"
              class="oppia-exploration-summary-header">
           <h2 class="oppia-group-page-header">
-            <span [innerHTML]="'{{groupHeaderI18nId}}' | translate"></span>
+            <span [innerHTML]="groupHeaderI18nId | translate"></span>
           </h2>
 
-          <div *ngFor="tile in activityList" class="d-inline-block">
+          <div *ngFor="let tile of activityList" class="d-inline-block">
             <oppia-exploration-summary-tile *ngIf="tile.activity_type == 'exploration'"
-                                            [get-exploration-id]="tile.id"
-                                            [get-exploration-title]="tile.title"
-                                            [get-last-updated-msec]="tile.last_updated_msec"
-                                            [get-objective]="tile.objective"
-                                            [get-category]="tile.category"
-                                            [get-ratings]="tile.ratings"
-                                            [get-num-views]="tile.num_views"
-                                            [get-thumbnail-icon-url]="tile.thumbnail_icon_url"
-                                            [get-thumbnail-bg-color]="tile.thumbnail_bg_color"
+                                            [getExplorationId]="tile.id"
+                                            [getExplorationTitle]="tile.title"
+                                            [getLastUpdatedMsec]="tile.last_updated_msec"
+                                            [getObjective]="tile.objective"
+                                            [getCategory]="tile.category"
+                                            [getRatings]="tile.ratings"
+                                            [getNumViews]="tile.num_views"
+                                            [getThumbnailIconUrl]="tile.thumbnail_icon_url"
+                                            [getThumbnailBgColor]="tile.thumbnail_bg_color"
                                             class="protractor-test-exp-summary-tile">
             </oppia-exploration-summary-tile>
           </div>
@@ -38,7 +38,7 @@
       </div>
 
       <div class="oppia-exp-summary-tiles-container" *ngIf="pageMode === LIBRARY_PAGE_MODES.INDEX">
-        <img [srcset]="{{bannerImageFileUrl}}"
+        <img [srcset]="bannerImageFileUrl"
              align="center"
              width="100%"
              alt="page banner">
@@ -47,16 +47,16 @@
           <h2 class="oppia-library-h2" [innerHTML]="'I18N_LIBRARY_SUB_HEADER' | translate"></h2>
         </div>
 
-        <div class="oppia-search-bar-container">
+        <!-- <div class="oppia-search-bar-container">
           <search-bar enable-dropup="false"></search-bar>
-        </div>
+        </div> -->
 
-        <div class="oppia-classroom-div" *ngIf="CLASSROOM_PROMOS_ARE_ENABLED">
+        <div class="oppia-classroom-div" >
           <div class="oppia-classroom-text">
             <h2 class="oppia-classroom-h2" [innerHTML]="'I18N_CLASSROOM_CALLOUT_HEADING_2' | translate"></h2>
             <h1 class="oppia-classroom-h1" [innerHTML]="'I18N_CLASSROOM_CALLOUT_HEADING_1' | translate"></h1>
             <p class="oppia-classroom-p" [innerHTML]="'I18N_CLASSROOM_CALLOUT_PARAGRAPH_1' | translate"></p>
-            <a class="btn oppia-dashboard-intro-button oppia-transition-200" [innerHTML]="'I18N_CLASSROOM_CALLOUT_BUTTON' | translate" [href]="/learn/math"></a>
+            <a class="btn oppia-dashboard-intro-button oppia-transition-200" [innerHTML]="'I18N_CLASSROOM_CALLOUT_BUTTON' | translate" href="/learn/math"></a>
           </div>
           <picture class="classroom-promo-image">
             <source type="image/webp"
@@ -73,25 +73,26 @@
              [innerHTML]="'I18N_LIBRARY_NO_EXPLORATION_GROUPS' | translate">
         </div>
 
-        <div class="oppia-library-group" *ngFor="group in libraryGroups track by index" (mouseenter)="setActiveGroup(index)" (mouseleave)="clearActiveGroup()" >
+        <div class="oppia-library-group" *ngFor="let group of libraryGroups; trackBy: index" (mouseenter)="setActiveGroup(index)" (mouseleave)="clearActiveGroup()" >
           <div class="oppia-library-group-header-container">
             <h2 [ngClass]="{'active': activeGroupIndex === index}" class="oppia-library-group-header">
               <a *ngIf="group.has_full_results_page" class="protractor-test-library-{{group.protractor_id}}" (click)="showFullResultsPage(group.categories, group.full_results_url)" tabindex="0">
-                <span [innerHTML]="'<[group.header_i18n_id]>"></span>
+                <span [innerHTML]="'group.header_i18n_id' | translate"></span>
                 <span ng-show="activeGroupIndex === index"><i class="material-icons md-32">&#xE315;</i></span>
               </a>
-              <span *ngIf="!group.has_full_results_page" [innerHTML]="{{group.header_i18n_id}} | translate">
+              <span *ngIf="!group.has_full_results_page" [innerHTML]="'group.header_i18n_id' | translate">
               </span>
             </h2>
           </div>
 
           <!-- TODO(sll): Add card at end of the row that, when clicked, does showFullResultsPage(group.categories)" -->
           <div *ngIf="!libraryWindowIsNarrow">
-            <md-button class="md-no-ink oppia-library-carousel-scroller"
-                       (click)="scroll(index, true)"
-                       *ngIf="!(leftmostCardIndices[index] == 0)">
+            <button mat-button
+                    class="md-no-ink oppia-library-carousel-scroller"
+                    (click)="scroll(index, true)"
+                    *ngIf="!(leftmostCardIndices[index] == 0)">
               <i class="material-icons">&#xE314;</i>
-            </md-button>
+            </button>
             <div class="oppia-library-carousel-scroller" *ngIf="leftmostCardIndices[index] == 0" aria-hidden="true">
             </div>
 
@@ -99,55 +100,55 @@
                  ng-swipe-right="scroll(index, true)"
                  ng-swipe-left="scroll(index, false)">
               <div class="oppia-library-carousel-tiles">
-                <div *ngFor="tile in group.activity_summary_dicts" class="d-inline-block">
+                <div *ngFor="let tile of group.activity_summary_dicts" class="d-inline-block">
                   <oppia-collection-summary-tile *ngIf="tile.activity_type == 'collection'"
-                                                 [get-collection-id]="tile.id"
-                                                 [get-collection-title]="tile.title"
-                                                 [get-last-updated-msec]="tile.last_updated_msec"
-                                                 [get-objective]="tile.objective"
-                                                 [get-node-count]="tile.node_count"
-                                                 [get-category]="tile.category"
-                                                 [get-thumbnail-icon-url]="tile.thumbnail_icon_url"
-                                                 [get-thumbnail-bg-color]="tile.thumbnail_bg_color"
-                                                 [is-owned-by-current-user]="activitiesOwned.collections[tile.id]"
-                                                 [show-learner-dashboard-icons-if-possible]="true">
+                                                 [getCollectionId]="tile.id"
+                                                 [getCollectionTitle]="tile.title"
+                                                 [getLastUpdatedMsec]="tile.last_updated_msec"
+                                                 [getObjective]="tile.objective"
+                                                 [getNodeCount]="tile.node_count"
+                                                 [getCategory]="tile.category"
+                                                 [getThumbnailIconUrl]="tile.thumbnail_icon_url"
+                                                 [getThumbnailBgColor]="tile.thumbnail_bg_color"
+                                                 [isOwnedByCurrentUser]="activitiesOwned.collections[tile.id]"
+                                                 [showLearnerDashboardIconsIfPossible]="true">
                   </oppia-collection-summary-tile>
                   <oppia-exploration-summary-tile *ngIf="tile.activity_type == 'exploration'"
-                                                  [get-exploration-id]="tile.id"
-                                                  [get-exploration-title]="tile.title"
-                                                  [get-last-updated-msec]="tile.last_updated_msec"
-                                                  [get-objective]="tile.objective"
-                                                  [get-category]="tile.category"
-                                                  [get-ratings]="tile.ratings"
-                                                  [get-num-views]="tile.num_views"
-                                                  [get-thumbnail-icon-url]="tile.thumbnail_icon_url"
-                                                  [get-thumbnail-bg-color]="tile.thumbnail_bg_color"
+                                                  [getExplorationId]="tile.id"
+                                                  [getExplorationTitle]="tile.title"
+                                                  [getLastUpdatedMsec]="tile.last_updated_msec"
+                                                  [getObjective]="tile.objective"
+                                                  [getCategory]="tile.category"
+                                                  [getRatings]="tile.ratings"
+                                                  [getNumViews]="tile.num_views"
+                                                  [getThumbnailIconUrl]="tile.thumbnail_icon_url"
+                                                  [getThumbnailBgColor]="tile.thumbnail_bg_color"
                                                   class="protractor-test-exp-summary-tile"
-                                                  [is-owned-by-current-user]="activitiesOwned.explorations[tile.id]"
-                                                  [show-learner-dashboard-icons-if-possible]="true">
+                                                  [isOwnedByCurrentUser]="activitiesOwned.explorations[tile.id]"
+                                                  [showLearnerDashboardIconsIfPossible]="true">
                   </oppia-exploration-summary-tile>
                 </div>
               </div>
             </div>
 
-            <md-button class="md-no-ink oppia-library-carousel-scroller"
+            <button mat-button class="md-no-ink oppia-library-carousel-scroller"
                        (click)="scroll(index, false)"
                        *ngIf="!((group.activity_summary_dicts.length - tileDisplayCount) <= leftmostCardIndices[index])"
                        aria-hidden="true">
               <i class="material-icons">&#xE315;</i>
-            </md-button>
+            </button>
             <div class="oppia-library-carousel-scroller"
                  *ngIf="(group.activity_summary_dicts.length - tileDisplayCount) <= leftmostCardIndices[index]">
             </div>
           </div>
 
           <div *ngIf="libraryWindowIsNarrow && leftmostCardIndices">
-            <md-button class="md-no-ink oppia-library-carousel-scroller"
-                       (click)="decrementLeftmostCardIndex(index)"
-                       *ngIf="!(leftmostCardIndices[index] == 0)"
-                       aria-hidden="true">
+            <button mat-button class="md-no-ink oppia-library-carousel-scroller"
+                    (click)="decrementLeftmostCardIndex(index)"
+                    *ngIf="!(leftmostCardIndices[index] == 0)"
+                    aria-hidden="true">
               <i class="material-icons">&#xE314;</i>
-            </md-button>
+            </button>
             <div class="oppia-library-carousel-scroller" *ngIf="leftmostCardIndices[index] == 0"></div>
 
             <div class="oppia-library-carousel"
@@ -155,39 +156,40 @@
                  ng-swipe-left="incrementLeftmostCardIndex(index)">
               <div class="oppia-library-carousel-tiles">
                 <oppia-collection-summary-tile *ngIf="group.activity_summary_dicts[leftmostCardIndices[index]].activity_type == 'collection'"
-                                               [get-collection-id]="group.activity_summary_dicts[leftmostCardIndices[index]].id"
-                                               [get-collection-title]="group.activity_summary_dicts[leftmostCardIndices[index]].title"
-                                               [get-last-updated-msec]="group.activity_summary_dicts[leftmostCardIndices[index]].last_updated_msec"
-                                               [get-objective]="group.activity_summary_dicts[leftmostCardIndices[index]].objective"
-                                               [get-node-count]="group.activity_summary_dicts[leftmostCardIndices[index]].node_count"
-                                               [get-category]="group.activity_summary_dicts[leftmostCardIndices[index]].category"
-                                               [get-thumbnail-icon-url]="group.activity_summary_dicts[leftmostCardIndices[index]].thumbnail_icon_url"
-                                               [get-thumbnail-bg-color]="group.activity_summary_dicts[leftmostCardIndices[index]].thumbnail_bg_color"
-                                               [show-learner-dashboard-icons-if-possible]="true"
-                                               [is-container-narrow]="true">
+                                               [getCollectionId]="group.activity_summary_dicts[leftmostCardIndices[index]].id"
+                                               [getCollectionTitle]="group.activity_summary_dicts[leftmostCardIndices[index]].title"
+                                               [getLastUpdatedMsec]="group.activity_summary_dicts[leftmostCardIndices[index]].last_updated_msec"
+                                               [getObjective]="group.activity_summary_dicts[leftmostCardIndices[index]].objective"
+                                               [getNodeCount]="group.activity_summary_dicts[leftmostCardIndices[index]].node_count"
+                                               [getCategory]="group.activity_summary_dicts[leftmostCardIndices[index]].category"
+                                               [getThumbnailIconUrl]="group.activity_summary_dicts[leftmostCardIndices[index]].thumbnail_icon_url"
+                                               [getThumbnailBgColor]="group.activity_summary_dicts[leftmostCardIndices[index]].thumbnail_bg_color"
+                                               [showLearnerDashboardIconsIfPossible]="true"
+                                               [isContainerNarrow]="true">
                 </oppia-collection-summary-tile>
                 <oppia-exploration-summary-tile *ngIf="group.activity_summary_dicts[leftmostCardIndices[index]].activity_type == 'exploration'"
-                                                [get-exploration-id]="group.activity_summary_dicts[leftmostCardIndices[index]].id"
-                                                [get-exploration-title]="group.activity_summary_dicts[leftmostCardIndices[index]].title"
-                                                [get-last-updated-msec]="group.activity_summary_dicts[leftmostCardIndices[index]].last_updated_msec"
-                                                [get-objective]="group.activity_summary_dicts[leftmostCardIndices[index]].objective"
-                                                [get-category]="group.activity_summary_dicts[leftmostCardIndices[index]].category"
-                                                [get-ratings]="group.activity_summary_dicts[leftmostCardIndices[index]].ratings"
-                                                [get-num-views]="group.activity_summary_dicts[leftmostCardIndices[index]].num_views"
-                                                [get-thumbnail-icon-url]="group.activity_summary_dicts[leftmostCardIndices[index]].thumbnail_icon_url"
-                                                [get-thumbnail-bg-color]="group.activity_summary_dicts[leftmostCardIndices[index]].thumbnail_bg_color"
+                                                [getExplorationId]="group.activity_summary_dicts[leftmostCardIndices[index]].id"
+                                                [getExplorationTitle]="group.activity_summary_dicts[leftmostCardIndices[index]].title"
+                                                [getLastUpdatedMsec]="group.activity_summary_dicts[leftmostCardIndices[index]].last_updated_msec"
+                                                [getObjective]="group.activity_summary_dicts[leftmostCardIndices[index]].objective"
+                                                [getCategory]="group.activity_summary_dicts[leftmostCardIndices[index]].category"
+                                                [getRatings]="group.activity_summary_dicts[leftmostCardIndices[index]].ratings"
+                                                [getNumViews]="group.activity_summary_dicts[leftmostCardIndices[index]].num_views"
+                                                [getThumbnailIconUrl]="group.activity_summary_dicts[leftmostCardIndices[index]].thumbnail_icon_url"
+                                                [getThumbnailBgColor]="group.activity_summary_dicts[leftmostCardIndices[index]].thumbnail_bg_color"
                                                 class="protractor-test-exp-summary-tile"
-                                                [show-learner-dashboard-icons-if-possible]="true"
-                                                [is-container-narrow]="true">
+                                                [showLearnerDashboardIconsIfPossible]="true"
+                                                [isContainerNarrow]="true">
                 </oppia-exploration-summary-tile>
               </div>
             </div>
 
-            <md-button class="md-no-ink oppia-library-carousel-scroller"
-                       (click)="incrementLeftmostCardIndex(index)"
-                       *ngIf="!((group.activity_summary_dicts.length - tileDisplayCount) <= leftmostCardIndices[index])">
+            <button mat-button
+                    class="md-no-ink oppia-library-carousel-scroller"
+                    (click)="incrementLeftmostCardIndex(index)"
+                    *ngIf="!((group.activity_summary_dicts.length - tileDisplayCount) <= leftmostCardIndices[index])">
               <i class="material-icons">&#xE315;</i>
-            </md-button>
+            </button>
             <div class="oppia-library-carousel-scroller"
                  *ngIf="(group.activity_summary_dicts.length - tileDisplayCount) <= leftmostCardIndices[index]">
             </div>
