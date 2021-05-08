@@ -17,7 +17,7 @@
         <div *ngIf="activityList.length > 0"
              class="oppia-exploration-summary-header">
           <h2 class="oppia-group-page-header">
-            <span [innerHTML]="groupHeaderI18nId | translate"></span>
+            <span>{{groupHeaderI18nId | translate}}</span>
           </h2>
 
           <div *ngFor="let tile of activityList" class="d-inline-block">
@@ -77,10 +77,11 @@
           <div class="oppia-library-group-header-container">
             <h2 [ngClass]="{'active': activeGroupIndex === index}" class="oppia-library-group-header">
               <a *ngIf="group.has_full_results_page" class="protractor-test-library-{{group.protractor_id}}" (click)="showFullResultsPage(group.categories, group.full_results_url)" tabindex="0">
-                <span [innerHTML]="'group.header_i18n_id' | translate"></span>
+                <span>{{group.header_i18n_id | translate}}</span>
                 <span ng-show="activeGroupIndex === index"><i class="material-icons md-32">&#xE315;</i></span>
               </a>
-              <span *ngIf="!group.has_full_results_page" [innerHTML]="'group.header_i18n_id' | translate">
+              <span *ngIf="!group.has_full_results_page">
+                {{group.header_i18n_id | translate}}
               </span>
             </h2>
           </div>

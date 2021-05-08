@@ -137,15 +137,12 @@ export class LibraryPageComponent implements OnInit, OnDestroy {
 
       this.bannerImageFileUrl = this.urlInterpolationService.getStaticImageUrl(
         '/library/' + this.bannerImageFilename);
-      this.CLASSROOM_PROMOS_ARE_ENABLED = true
       let service = this.classroomBackendApiService;
       service.fetchClassroomPromosAreEnabledStatusAsync().then(
         (classroomPromosAreEnabled) => {
           this.CLASSROOM_PROMOS_ARE_ENABLED = classroomPromosAreEnabled;
-          console.log(classroomPromosAreEnabled)
+          console.log(this.CLASSROOM_PROMOS_ARE_ENABLED)
         });
-        console.log(this.CLASSROOM_PROMOS_ARE_ENABLED)
-
       this.activeGroupIndex = null;
 
       var currentPath = this.windowRef.nativeWindow.location.pathname;
