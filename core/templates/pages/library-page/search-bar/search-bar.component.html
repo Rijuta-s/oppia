@@ -10,7 +10,7 @@
         </div>
         <input type="text" 
                class="form-control oppia-search-bar-input oppia-search-bar-text-input protractor-test-search-input"
-               [attr.placeholder]="<[searchBarPlaceholder]>"
+               [attr.placeholder]="searchBarPlaceholder"
                [(ngModel)]="searchQuery"
                (ngChange)="classroomPageIsActive ? null : onSearchQueryChangeExec()"
                [ngModelOptions]="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 } }"
@@ -37,41 +37,43 @@
         class="protractor-test-search-bar-dropdown-menu oppia-search-bar-dropdown-menu oppia-search-bar-dropdown-menu-section"
         role="menu"
         (click)="$event.stopPropagation()">
-      <li *ngFor="item in selectionDetails.categories.masterList track by $index"
-          *ngIf="selectionDetails.categories.selections[item.id]">
-        <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
-          <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-selected"></span>
-          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-        </a>
-        <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="$first" (keydown)="onMenuKeypress($event, 'category', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
-          <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-selected"></span>
-          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-        </a>
-        <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="$last" (keydown)="onMenuKeypress($event, 'category', {tab: ACTION_CLOSE})"
-           class="dropdown-item">
-          <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-selected"></span>
-          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-        </a>
+      <li *ngFor="let item of selectionDetails.categories.masterList; trackBy: index">
+        <div *ngIf="selectionDetails.categories.selections[item.id]">
+          <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
+            <span class="protractor-test-selected">{{item.text | translate}}</span>
+            <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          </a>
+          <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="$first" (keydown)="onMenuKeypress($event, 'category', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
+            <span class="protractor-test-selected">{{item.text | translate}}</span>
+            <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          </a>
+          <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="$last" (keydown)="onMenuKeypress($event, 'category', {tab: ACTION_CLOSE})"
+            class="dropdown-item">
+            <span class="protractor-test-selected">{{item.text | translate}}</span>
+            <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          </a>
+        </div>
       </li>
       <li *ngIf="selectionDetails.categories.numSelections > 1">
         <a href="" (click)="deselectAll('categories')" class="dropdown-item"><i>Deselect All</i></a>
       </li>
       <hr *ngIf="selectionDetails.categories.numSelections > 0" class="oppia-search-bar-hr">
-      <li *ngFor="item in selectionDetails.categories.masterList track by $index"
-          *ngIf="!selectionDetails.categories.selections[item.id]">
-        <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
-          <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-deselected"></span>
-          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-        </a>
-        <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="$first" (keydown)="onMenuKeypress($event, 'category', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
-          <span [innerHtml]="'{{item.text}} | translate" class="protractor-test-deselected"></span>
-          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-        </a>
-        <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="$last" (keydown)="onMenuKeypress($event, 'category', {tab: ACTION_CLOSE})"
-           class="dropdown-item">
-          <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-deselected"></span>
-          <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-        </a>
+      <li *ngFor="let item of selectionDetails.categories.masterList; trackBy: index">
+        <div *ngIf="!selectionDetails.categories.selections[item.id]">
+          <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
+            <span class="protractor-test-deselected">{{item.text | translate}}</span>
+            <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          </a>
+          <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="$first" (keydown)="onMenuKeypress($event, 'category', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
+            <span class="protractor-test-deselected">{{item.text | translate}}</span>
+            <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          </a>
+          <a href="" (click)="toggleSelection('categories', item.id)" *ngIf="$last" (keydown)="onMenuKeypress($event, 'category', {tab: ACTION_CLOSE})"
+            class="dropdown-item">
+            <span class="protractor-test-deselected">{{item.text | translate}}</span>
+            <i *ngIf="selectionDetails.categories.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+          </a>
+        <div>
       </li>
     </ul>
   </div>
@@ -87,41 +89,43 @@
   </button>
   <!-- The $event.stopPropagation() prevents the dropdown from closing after an option is selected. -->
   <ul uib-dropdown-menu class="protractor-test-search-bar-dropdown-menu oppia-search-bar-dropdown-menu-section" role="menu" (click)="$event.stopPropagation()">
-    <li *ngFor="item in selectionDetails.languageCodes.masterList track by $index"
-        *ngIf="selectionDetails.languageCodes.selections[item.id]">
-      <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
-        <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-selected"></span>
-        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-      </a>
-      <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="$first" (keydown)="onMenuKeypress($event, 'language', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
-        <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-selected"></span>
-        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-      </a>
-      <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="$last" (keydown)="onMenuKeypress($event, 'language', {tab: ACTION_CLOSE})"
-         class="dropdown-item">
-        <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-selected"></span>
-        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-      </a>
+    <li *ngFor="let item of selectionDetails.languageCodes.masterList; trackBy: index">
+      <div *ngIf="selectionDetails.languageCodes.selections[item.id]">
+        <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
+          <span class="protractor-test-selected">{{item.text | translate }}</span>
+          <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        </a>
+        <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="first" (keydown)="onMenuKeypress($event, 'language', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
+          <span class="protractor-test-selected">{{item.text | translate }}</span>
+          <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        </a>
+        <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="last" (keydown)="onMenuKeypress($event, 'language', {tab: ACTION_CLOSE})"
+          class="dropdown-item">
+          <span class="protractor-test-selected">{{item.text | translate }}</span>
+          <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18 float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        </a>
+      <div>
     </li>
     <li *ngIf="selectionDetails.languageCodes.numSelections > 1">
       <a href="" (click)="deselectAll('languageCodes')" class="dropdown-item"><i>Deselect All</i></a>
     </li>
     <hr *ngIf="selectionDetails.languageCodes.numSelections > 0" class="oppia-search-bar-hr">
-    <li *ngFor="item in selectionDetails.languageCodes.masterList track by $index"
-        *ngIf="!selectionDetails.languageCodes.selections[item.id]">
-      <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="!$first && !$last" class="dropdown-item">
-        <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-deselected"></span>
-        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-      </a>
-      <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="$first" (keydown)="onMenuKeypress($event, 'language', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
-        <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-deselected"></span>
-        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-      </a>
-      <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="$last" (keydown)="onMenuKeypress($event, 'language', {tab: ACTION_CLOSE})"
-         class="dropdown-item">
-        <span [innerHtml]="'{{item.text}}' | translate" class="protractor-test-deselected"></span>
-        <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
-      </a>
+    <li *ngFor="let item of selectionDetails.languageCodes.masterList; trackBy: index">
+      <div *ngIf="!selectionDetails.languageCodes.selections[item.id]">
+        <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="!first && !last" class="dropdown-item">
+          <span class="protractor-test-deselected">{{item.text | translate }}</span>
+          <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        </a>
+        <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="first" (keydown)="onMenuKeypress($event, 'language', {shiftTab: ACTION_CLOSE})" class="dropdown-item">
+          <span class="protractor-test-deselected">{{item.text | translate }}</span>
+          <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        </a>
+        <a href="" (click)="toggleSelection('languageCodes', item.id)" *ngIf="last" (keydown)="onMenuKeypress($event, 'language', {tab: ACTION_CLOSE})"
+          class="dropdown-item">
+          <span class="protractor-test-deselected">{{item.text | translate }}</span>
+          <i *ngIf="selectionDetails.languageCodes.selections[item.id]" class="material-icons md-18  float-right oppia-search-bar-category-selection-symbol">&#xE876;</i>
+        </a>
+      </div>
     </li>
   </ul>
 </div>

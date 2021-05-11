@@ -31,6 +31,7 @@ import { LearnerPlaylistModalComponent } from 'pages/learner-dashboard-page/moda
 import { LibraryPageComponent } from 'pages/library-page/library-page.component'
 import { SearchResultsComponent } from 'pages/library-page/search-results/search-results.component';
 import { LibraryFooterComponent } from 'pages/library-page/library-footer/library-footer.component';
+import { SearchBarComponent } from 'pages/library-page/search-bar/search-bar.component';
 @NgModule({
   imports: [
     BrowserModule,
@@ -43,6 +44,7 @@ import { LibraryFooterComponent } from 'pages/library-page/library-footer/librar
     LibraryPageComponent,
     OppiaAngularRootComponent,
     SearchResultsComponent,
+    SearchBarComponent,
   ],
   entryComponents: [
     LearnerPlaylistModalComponent,
@@ -50,6 +52,7 @@ import { LibraryFooterComponent } from 'pages/library-page/library-footer/librar
     LibraryPageComponent,
     OppiaAngularRootComponent,
     SearchResultsComponent,
+    SearchBarComponent
   ],
   providers: [
     {

@@ -17,9 +17,8 @@
  */
 
 import { Subscription } from 'rxjs';
-import { OppiaAngularRootComponent } from
-  'components/oppia-angular-root.component';
 import constants from 'assets/constants';
+import { NavigationService } from 'services/navigation.service';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { downgradeComponent } from '@angular/upgrade/static';
 import { ClassroomBackendApiService } from 'domain/classroom/classroom-backend-api.service';
@@ -29,7 +28,7 @@ import { UrlInterpolationService } from 'domain/utilities/url-interpolation.serv
 import { WindowDimensionsService } from 'services/contextual/window-dimensions.service';
 import { WindowRef } from 'services/contextual/window-ref.service';
 import { UrlService } from 'services/contextual/url.service';
-import { NavigationService } from 'services/navigation.service';
+import { TranslateService } from 'services/translate.service'
 import { ConstructTranslationIdsService } from 'services/construct-translation-ids.service';
 import { LanguageUtilService } from 'domain/utilities/language-util.service';
 
@@ -67,33 +66,34 @@ interface SelectionDetails {
 })
 
 export class SearchBarComponent implements OnInit, OnDestroy {
-@Input() enableDropup: boolean;
-directiveSubscriptions: Subscription = new Subscription();
-SEARCH_DROPDOWN_CATEGORIES: SearchDropDownCategories[];
-ACTION_OPEN: string;
-ACTION_CLOSE: string
-KEYBOARD_EVENT_TO_KEY_CODES: {};
-searchQuery: string = '';
-classroomPageIsActive: boolean;
-SUPPORTED_CONTENT_LANGUAGES: LanguageIdAndText[];
-selectionDetails: SelectionDetails
-translationData = {};
-activeMenuName: string;
-searchBarPlaceholder: string;
-constructor(
-  private i18nLanguageCodeService: I18nLanguageCodeService,
-  private windowRef: WindowRef,
-  private searchService: SearchService,
-  private urlService: UrlService,
-  private windowDimensionsService: WindowDimensionsService,
-  private navigationService: NavigationService,
-  private classroomBackendApiService: ClassroomBackendApiService,
-  private languageUtilService: LanguageUtilService,
-  private constructTranslationIdsService: ConstructTranslationIdsService,
-){}
-
-
-      
+  @Input() enableDropup: boolean;
+  directiveSubscriptions: Subscription = new Subscription();
+  SEARCH_DROPDOWN_CATEGORIES: SearchDropDownCategories[];
+  ACTION_OPEN: string;
+  ACTION_CLOSE: string
+  KEYBOARD_EVENT_TO_KEY_CODES: {};
+  searchQuery: string = '';
+  classroomPageIsActive: boolean;
+  SUPPORTED_CONTENT_LANGUAGES: LanguageIdAndText[];
+  selectionDetails: SelectionDetails
+  translationData = {};
+  activeMenuName: string;
+  searchBarPlaceholder: string;
+  categoryButtonText: string;
+  languageButtonText: string;
+  constructor(
+    private i18nLanguageCodeService: I18nLanguageCodeService,
+    private windowRef: WindowRef,
+    private searchService: SearchService,
+    private urlService: UrlService,
+    private windowDimensionsService: WindowDimensionsService,
+    private navigationService: NavigationService,
+    private classroomBackendApiService: ClassroomBackendApiService,
+    private languageUtilService: LanguageUtilService,
+    private constructTranslationIdsService: ConstructTranslationIdsService,
+    private translateService : TranslateService
+  ){}
+  
   ngOnInit() {
     this.classroomPageIsActive = (
       this.urlService.getPathname().startsWith('/learn'));
@@ -139,11 +139,11 @@ constructor(
     for (var itemsType in this.selectionDetails) {
       this.updateSelectionDetails(itemsType);
     }
-    $scope.$on('$locationChangeSuccess', () => {
-      if (this.urlService.getUrlParams().hasOwnProperty('q')) {
-       this.updateSearchFieldsBasedOnUrlQuery();
-      }
-    });
+    // $scope.$on('$locationChangeSuccess', () => {
+    //   if (this.urlService.getUrlParams().hasOwnProperty('q')) {
+    //    this.updateSearchFieldsBasedOnUrlQuery();
+    //   }
+    // });
 
     this.directiveSubscriptions.add(
       this.i18nLanguageCodeService.onPreferredLanguageCodesLoaded.subscribe(
@@ -176,7 +176,9 @@ constructor(
         }
       )
     );
-    $rootScope.$on('$translateChangeSuccess', this.refreshSearchBarLabels());
+    this.directiveSubscriptions.add(
+      this.translateService.onLangChange
+        .subscribe(() => this.refreshSearchBarLabels()));
 
     this.directiveSubscriptions.add(
       this.classroomBackendApiService.onInitializeTranslation
@@ -189,16 +191,17 @@ constructor(
     // would generate FOUC for languages other than English. As an
     // exception, we translate them here and update the translation
     // every time the language is changed.
-    this.searchBarPlaceholder = $translate.instant(
+    this.searchBarPlaceholder = this.translateService.getInterpolatedString(
       'I18N_LIBRARY_SEARCH_PLACEHOLDER');
     // 'messageformat' is the interpolation method for plural forms.
     // http://angular-translate.github.io/docs/#/guide/14_pluralization.
-    this.categoryButtonText = $translate.instant(
+    this.categoryButtonText = this.translateService.getInterpolatedString(
       this.selectionDetails.categories.summary,
-      this.translationData, 'messageformat');
-    this.languageButtonText = $translate.instant(
+      this.translationData);
+      // , 'messageformat'
+    this.languageButtonText = this.translateService.getInterpolatedString(
       this.selectionDetails.languageCodes.summary,
-      this.translationData, 'messageformat');
+      this.translationData);
   };
 
   // Update the description, numSelections and summary fields of the
@@ -230,7 +233,7 @@ constructor(
     if (selectedItems.length > 0) {
       var translatedItems = [];
       for (var i = 0; i < selectedItems.length; i++) {
-        translatedItems.push($translate.instant(selectedItems[i]));
+        translatedItems.push(this.translateService.getInterpolatedString(selectedItems[i]));
       }
       this.selectionDetails[itemsType].description = (
         translatedItems.join(', '));
@@ -271,7 +274,7 @@ constructor(
           this.selectionDetails.languageCodes.selections
         );
         if (this.windowRef.nativeWindow.location.pathname === '/search/find') {
-          $location.url('/find?q=' + searchUrlQueryString);
+          this.windowRef.nativeWindow.location.search ='/find?q=' + searchUrlQueryString;
         } else {
           this.windowRef.nativeWindow.location.href = '/search/find?q=' + searchUrlQueryString;
         }
@@ -302,7 +305,7 @@ constructor(
    * open/close action to be performed (category,language).
    */
   openSubmenu(evt, menuName): void {
-    NavigationService.openSubmenu(evt, menuName);
+    this.navigationService.openSubmenu(evt, menuName);
   };
   /**
    * Handles keydown events on menus.
@@ -316,8 +319,8 @@ constructor(
    *  onMenuKeypress($event, 'category', {enter: 'open'})
    */
   onMenuKeypress(evt, menuName, eventsTobeHandled): void {
-    NavigationService.onMenuKeypress(evt, menuName, eventsTobeHandled);
-    this.activeMenuName = NavigationService.activeMenuName;
+    this.navigationService.onMenuKeypress(evt, menuName, eventsTobeHandled);
+    this.activeMenuName =  this.navigationService.activeMenuName;
   };
 
   ngOnDestroy() {
@@ -325,3 +328,6 @@ constructor(
   };
 }
 
+
+angular.module('oppia').directive(
+  'searchBar', downgradeComponent({component: SearchBarComponent}));
