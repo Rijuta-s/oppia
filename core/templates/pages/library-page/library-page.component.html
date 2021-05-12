@@ -48,10 +48,10 @@
         </div>
 
         <div class="oppia-search-bar-container">
-          <search-bar enable-dropup="false"></search-bar>
+          <search-bar [enableDropup]="false"></search-bar>
         </div>
 
-        <div class="oppia-classroom-div" >
+        <div class="oppia-classroom-div" *ngIf="CLASSROOM_PROMOS_ARE_ENABLED" >
           <div class="oppia-classroom-text">
             <h2 class="oppia-classroom-h2" [innerHTML]="'I18N_CLASSROOM_CALLOUT_HEADING_2' | translate"></h2>
             <h1 class="oppia-classroom-h1" [innerHTML]="'I18N_CLASSROOM_CALLOUT_HEADING_1' | translate"></h1>
@@ -102,7 +102,7 @@
                  ng-swipe-left="scroll(index, false)">
               <div class="oppia-library-carousel-tiles">
                 <div *ngFor="let tile of group.activity_summary_dicts" class="d-inline-block">
-                  <oppia-collection-summary-tile *ngIf="tile.activity_type == 'collection'"
+                  <oppia-collection-summary-tile *ngIf="tile.activity_type === 'collection'"
                                                  [getCollectionId]="tile.id"
                                                  [getCollectionTitle]="tile.title"
                                                  [getLastUpdatedMsec]="tile.last_updated_msec"
@@ -114,7 +114,7 @@
                                                  [isOwnedByCurrentUser]="activitiesOwned.collections[tile.id]"
                                                  [showLearnerDashboardIconsIfPossible]="true">
                   </oppia-collection-summary-tile>
-                  <oppia-exploration-summary-tile *ngIf="tile.activity_type == 'exploration'"
+                  <oppia-exploration-summary-tile *ngIf="tile.activity_type === 'exploration'"
                                                   [getExplorationId]="tile.id"
                                                   [getExplorationTitle]="tile.title"
                                                   [getLastUpdatedMsec]="tile.last_updated_msec"
@@ -156,7 +156,7 @@
                  ng-swipe-right="decrementLeftmostCardIndex(index)"
                  ng-swipe-left="incrementLeftmostCardIndex(index)">
               <div class="oppia-library-carousel-tiles">
-                <oppia-collection-summary-tile *ngIf="group.activity_summary_dicts[leftmostCardIndices[index]].activity_type == 'collection'"
+                <oppia-collection-summary-tile *ngIf="group.activity_summary_dicts[leftmostCardIndices[index]].activity_type === 'collection'"
                                                [getCollectionId]="group.activity_summary_dicts[leftmostCardIndices[index]].id"
                                                [getCollectionTitle]="group.activity_summary_dicts[leftmostCardIndices[index]].title"
                                                [getLastUpdatedMsec]="group.activity_summary_dicts[leftmostCardIndices[index]].last_updated_msec"
@@ -168,7 +168,7 @@
                                                [showLearnerDashboardIconsIfPossible]="true"
                                                [isContainerNarrow]="true">
                 </oppia-collection-summary-tile>
-                <oppia-exploration-summary-tile *ngIf="group.activity_summary_dicts[leftmostCardIndices[index]].activity_type == 'exploration'"
+                <oppia-exploration-summary-tile *ngIf="group.activity_summary_dicts[leftmostCardIndices[index]].activity_type === 'exploration'"
                                                 [getExplorationId]="group.activity_summary_dicts[leftmostCardIndices[index]].id"
                                                 [getExplorationTitle]="group.activity_summary_dicts[leftmostCardIndices[index]].title"
                                                 [getLastUpdatedMsec]="group.activity_summary_dicts[leftmostCardIndices[index]].last_updated_msec"
